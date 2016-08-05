@@ -6,17 +6,23 @@
 #include <functional>
 #include <wx/utils.h> 
 
+#include "NetWorkThread.h"
 ///////////////////////////////////////////////////////////////////////////
 BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CLOSE(Dlg::OnClose)
 	EVT_DIRPICKER_CHANGED(WX_ID_DIR_PICKER,Dlg::OnProtoDirSelected)
+	EVT_CHOICE(WX_ID_MSG_CHOICE, Dlg::OnMsgSelected)
+	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnLogin)
+	EVT_BUTTON(WX_ID_BTN_SEND, Dlg::OnBtnSend)
+	EVT_COMMAND  (ID_RECV_PROTOCOL_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
 END_EVENT_TABLE()
 
 
 Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) 
 : wxDialog(parent, id, title, pos, size, style)
 {
-	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
+	SetMinSize(wxSize(1024, 768));
+	//this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer(wxVERTICAL);
@@ -52,7 +58,7 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_pPwdCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pPwdCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 	
-	m_pBtnLogin = new wxButton(this, wxID_ANY, wxT("Login"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pBtnLogin = new wxButton(this, WX_ID_BTN_LOGIN, wxT("Login"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pBtnLogin, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL, 5);
 
 
@@ -73,13 +79,11 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	bSizer5->Add(m_staticText6, 0, wxALIGN_CENTER | wxALL, 5);
 
 	wxArrayString m_pProtoMsgChoiceChoices;
-	m_pProtoMsgChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pProtoMsgChoiceChoices, wxCB_SORT);
-	m_pProtoMsgChoice->SetSelection(0);
+	m_pProtoMsgChoice = new wxChoice(this, WX_ID_MSG_CHOICE, wxDefaultPosition, wxDefaultSize, m_pProtoMsgChoiceChoices, wxCB_SORT);
 	bSizer5->Add(m_pProtoMsgChoice, 1, wxALIGN_CENTER | wxLEFT | wxRIGHT, 5);
 
-	m_button3 = new wxButton(this, wxID_ANY, wxT("Send"), wxDefaultPosition, wxDefaultSize, 0);
-	bSizer5->Add(m_button3, 0, wxALIGN_CENTER | wxALL, 5);
-	
+	m_button3 = new wxButton(this, WX_ID_BTN_SEND, wxT("Send"), wxDefaultPosition, wxDefaultSize, 0);
+	bSizer5->Add(m_button3, 0, wxALIGN_CENTER | wxALL, 5);	
 
 	bSizer1->Add(bSizer5, 0, wxEXPAND, 5);
 	
@@ -89,35 +93,30 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	wxBoxSizer* bSizer7;
 	bSizer7 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_pFGSizer = new wxFlexGridSizer(0, 2, 0, 0);
-	m_pFGSizer->SetFlexibleDirection(wxBOTH);
-	m_pFGSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-	bSizer7->Add(m_pFGSizer, 2, wxEXPAND|wxALL, 5);
+	m_pFGSizer = new wxFlexGridSizer(40,2,2,2);
+	bSizer7->Add(m_pFGSizer, 0, wxALL, 5);
 
 
 	wxStaticLine* m_staticline2 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 	bSizer7->Add(m_staticline2, 0, wxEXPAND | wxALL, 5);
-
-	wxBoxSizer* bSizer10;
-	bSizer10 = new wxBoxSizer(wxVERTICAL);
-
+	
 	m_pListBoxCtrl = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0);
-	bSizer10->Add(m_pListBoxCtrl, 1, wxEXPAND| wxTOP|wxLEFT|wxRIGHT, 5);
+	bSizer7->Add(m_pListBoxCtrl, 1, wxEXPAND| wxTOP|wxLEFT|wxRIGHT, 5);
+	m_pListBoxCtrl->SetBackgroundColour( *wxBLACK );
+	m_pListBoxCtrl->SetForegroundColour( *wxGREEN);
 
-
-	bSizer7->Add(bSizer10, 3, wxEXPAND, 5);
-
-
+	
 	bSizer1->Add(bSizer7, 1, wxEXPAND, 5);
-
-	this->SetSizer(bSizer1);
-	this->Layout();
-
-	SetMinSize(wxSize(950, 580));
+	
 	this->SetSizer(bSizer1);
 	this->Layout();	
-	this->Centre(wxBOTH);
+
+	m_pNetWorkThrd = nullptr;
+}
+
+Dlg::~Dlg()
+{
+	ProtocolManager::Instance()->ReleaseInstance();
 }
 
 void Dlg::OnClose(wxCloseEvent& /*event*/)
@@ -140,10 +139,91 @@ void Dlg::InitCtrls( const wxString& dir  )
 
 void Dlg::OnProtoDirSelected(wxFileDirPickerEvent& event)
 {
-	InitCtrls(event.GetPath());
+	wxString strPath = event.GetPath();
+	InitCtrls(strPath);
+
 }
 
-Dlg::~Dlg()
+void Dlg::OnMsgSelected(wxCommandEvent& event)
 {
-	ProtocolManager::Instance()->ReleaseInstance();
+	InitProtocolField(event.GetString());
+}
+
+void Dlg::InitProtocolField(const wxString& strMsgName)
+{
+	for (size_t i=0;i<m_FieldList.size();i++)
+	{
+		m_FieldList.at(i).Clear();
+		m_FieldList.at(i).Enable(false);
+		m_FieldList.at(i).Show(false);
+	}
+
+	auto msgInfo = ProtocolManager::Instance()->GetProtoMessageInfo(strMsgName.ToStdString());
+	
+	for(size_t i=0;i<msgInfo.fields.size();i++)
+	{
+		wxString strLabel = wxString::Format("[%s] [%s] %s : ", msgInfo.fields.at(i).strLabelType, msgInfo.fields.at(i).strFieldType, msgInfo.fields.at(i).name);
+		if (m_FieldList.size()<=i)
+		{
+			FieldCtrl ctrl;
+
+			wxStaticText* pStatic = new wxStaticText(this, wxID_ANY, strLabel, wxDefaultPosition, wxDefaultSize, 0);
+			pStatic->Wrap(-1);
+			m_pFGSizer->Add(pStatic);
+
+			wxTextCtrl* pTextCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+			m_pFGSizer->Add(pTextCtrl);
+
+			ctrl.nIndex = i;
+			ctrl.pStaticTxt = pStatic;
+			ctrl.pTextCtrl = pTextCtrl;
+
+			m_FieldList.push_back(ctrl);
+		}
+		else
+		{
+			FieldCtrl ctrl = m_FieldList.at(i);
+			ctrl.pStaticTxt->SetLabelText(strLabel);
+			ctrl.pTextCtrl->SetValue("");
+			ctrl.Enable(true);
+			ctrl.Show(true);
+		}
+	}
+	Layout();
+}
+
+void Dlg::OnBtnLogin(wxCommandEvent& event)
+{
+	// create the thread
+	unsigned long nPort = 0;
+	m_pServerPortCtrl->GetValue().ToULong(&nPort);
+	m_pNetWorkThrd = new NetWorkThread(this,m_pServerIPCtrl->GetValue().ToStdString(),nPort);
+	wxThreadError err = m_pNetWorkThrd->Create();
+
+	if (err != wxTHREAD_NO_ERROR)
+	{
+		wxMessageBox(_("Couldn't create thread!"));
+		return;
+	}
+
+	err = m_pNetWorkThrd->Run();
+
+	if (err != wxTHREAD_NO_ERROR)
+	{
+		wxMessageBox(_("Couldn't run thread!"));
+		return;
+	}
+}
+
+void Dlg::OnBtnSend(wxCommandEvent& event)
+{
+
+}
+
+void Dlg::OnNetWorkMsg(wxCommandEvent& event)
+{
+	if (m_pListBoxCtrl)
+	{
+		m_pListBoxCtrl->Append(event.GetString());
+	}
 }

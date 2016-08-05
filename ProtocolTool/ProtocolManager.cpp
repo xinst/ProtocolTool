@@ -7,6 +7,15 @@ using namespace google::protobuf;
 using namespace google::protobuf::io;
 using namespace google::protobuf::compiler;
 
+
+const char * const ProtocolManager::PBLabelName[4] = {
+	"ERROR",     // 0 is reserved for errors
+
+	"optional",  // LABEL_OPTIONAL
+	"required",  // LABEL_REQUIRED
+	"repeated",  // LABEL_REPEATED
+};
+
 ProtocolManager::ProtocolManager()
 	:m_pImporter(nullptr)
 {
@@ -254,9 +263,11 @@ bool ProtocolManager::GetFieldsFromProtoFile(const string& proto_full_filename, 
 				if (pField)
 				{
 					field.name = pField->name();
-					field.type = pField->type();
-					field.cpp_type = pField->cpp_type();
+					field.nFieldType = pField->type();
 					field.label_type = pField->label();
+
+					field.strFieldType = pField->type_name();
+					field.strLabelType = PBLabelName[pField->label()];
 					fields.push_back(field);
 				}
 			}
@@ -354,4 +365,10 @@ MsgInfo ProtocolManager::GetProtoMessageInfo(const std::string& proto_full_filen
 		}
 	}	
 	return MsgInfo();
+}
+
+MsgInfo ProtocolManager::GetProtoMessageInfo(const string& msgFullName)
+{
+	wxString strFullProtoName = GetProtoFullNameFromMsgName(msgFullName);
+	return GetProtoMessageInfo(strFullProtoName.ToStdString(),msgFullName);
 }

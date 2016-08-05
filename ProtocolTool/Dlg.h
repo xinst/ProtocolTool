@@ -28,10 +28,60 @@
 #include "ProtocolManager.h"
 ///////////////////////////////////////////////////////////////////////////
 
+class NetWorkThread;
 
 enum TOOLS_ID_LIST
 {
 	WX_ID_DIR_PICKER = wxID_HIGHEST+1,
+	WX_ID_MSG_CHOICE,
+	WX_ID_BTN_LOGIN,	
+	WX_ID_BTN_SEND,
+};
+
+struct FieldCtrl
+{
+	int		nIndex = 0;
+	wxStaticText* pStaticTxt = nullptr;
+	wxTextCtrl*	  pTextCtrl = nullptr;
+
+	void Clear()
+	{
+		if (pStaticTxt)
+		{
+			pStaticTxt->SetLabelText("");
+		}
+
+		if (pTextCtrl)
+		{
+			pTextCtrl->SetValue("");
+		}
+	}
+
+	void Show( bool bShow)
+	{
+		if (pStaticTxt)
+		{
+			pStaticTxt->Show(bShow);
+		}
+
+		if (pTextCtrl)
+		{
+			pTextCtrl->Show(bShow);
+		}
+	}
+
+	void Enable( bool bEnable)
+	{
+		if (pStaticTxt)
+		{
+			pStaticTxt->Enable(bEnable);
+		}
+
+		if (pTextCtrl)
+		{
+			pTextCtrl->Enable(bEnable);
+		}
+	}
 };
 
 
@@ -46,6 +96,14 @@ protected:
 	void InitCtrls(const wxString& dir);
 
 	void OnProtoDirSelected(wxFileDirPickerEvent& event);
+	void OnMsgSelected(wxCommandEvent& event);
+
+	void InitProtocolField( const wxString& strMsgName );
+
+	void OnBtnLogin(wxCommandEvent& event);
+	void OnBtnSend(wxCommandEvent& event);
+	void OnNetWorkMsg(wxCommandEvent& event);
+
 
 public:
 
@@ -59,6 +117,10 @@ public:
 
 	wxDECLARE_NO_COPY_CLASS(Dlg);
 	wxDECLARE_EVENT_TABLE();
+
+private:
+	std::vector<FieldCtrl>	m_FieldList;
+	NetWorkThread*			m_pNetWorkThrd;
 
 private:
 	wxStaticText* m_staticText1;

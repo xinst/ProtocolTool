@@ -1,22 +1,23 @@
-//*************************************************************************
-// SingletonTemplate.h 2016-8-4 17:57
-// Author: Stonexin
-// Purpose: 
+// -------------------------------------------------------------------------
+//    @FileName         :    NFSingleton.h
+//    @Author           :    LvSheng.Huang
+//    @Date             :    2011-01-21
+//    @Module           :    NFSingleton
 //
-//*************************************************************************
+// -------------------------------------------------------------------------
 
-#ifndef SINGLETONTEMPLATE_H__
-#define SINGLETONTEMPLATE_H__
+#ifndef NF_SINGLETON_H
+#define NF_SINGLETON_H
 
 #include <iostream>
 
 template <class T>
-class SingletonTpl
+class NFSingleton
 {
 
 public:
 
-    SingletonTpl()
+    NFSingleton()
     {
         //assert( !m_instance );
         // 下面是判断VC++编译器版本，版本不同相应的处理也不同
@@ -28,12 +29,10 @@ public:
 #endif
     }
 
-    ~SingletonTpl()
+    ~NFSingleton()
     {
-       if (m_pInstance)
-       {
-		   m_pInstance = nullptr;
-       }
+        //assert( m_instance );
+        m_pInstance = NULL;
     }
 
 public:
@@ -74,8 +73,6 @@ private:
 };
 
 template <class T>
-T* SingletonTpl<T>::m_pInstance = NULL;
+T* NFSingleton<T>::m_pInstance = NULL;
 
-
-
-#endif // SINGLETONTEMPLATE_H__
+#endif

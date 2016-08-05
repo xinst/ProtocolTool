@@ -1,11 +1,12 @@
 #ifndef stdwx_h__
 #define stdwx_h__
 
-#include "wx/wxprec.h"
+#define WIN32_LEAN_AND_MEAN
 
-#ifndef WX_PRECOMP
-#	include "wx/wx.h"
-#endif
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <Windows.h>
 
+#include "wx/wx.h"
 
 #endif // stdwx_h__

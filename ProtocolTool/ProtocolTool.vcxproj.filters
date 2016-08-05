@@ -27,6 +27,12 @@
     <ClCompile Include="ProtocolManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NFCNet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWorkThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dlg.h">
@@ -41,7 +47,16 @@
     <ClInclude Include="ProtocolManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SingletonTemplate.h">
+    <ClInclude Include="NFSingleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NFCNet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NFINet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NetWorkThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

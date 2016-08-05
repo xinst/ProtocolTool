@@ -13,7 +13,7 @@ bool MyApp::OnInit()
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	Dlg* pDlg = new Dlg(NULL, wxID_ANY, L"ProtocolTool", wxDefaultPosition, wxSize(950, 580), wxDEFAULT_DIALOG_STYLE | wxMAXIMIZE_BOX | wxRESIZE_BORDER);
+	Dlg* pDlg = new Dlg(NULL, wxID_ANY, L"ProtocolTool", wxDefaultPosition, wxSize(1024, 768), wxDEFAULT_DIALOG_STYLE | wxMAXIMIZE_BOX | wxRESIZE_BORDER);
 	pDlg->Centre();
 
 	// Show it and tell the application that it's our main window
