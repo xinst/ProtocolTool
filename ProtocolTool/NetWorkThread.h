@@ -10,10 +10,18 @@
 
 #include <atomic>
 #include <wx/thread.h>
+#include <queue>
 #include "NFINet.h"
 class NFCNet;
 
 const int ID_RECV_PROTOCOL_MSG = 100000;
+
+struct NetMsg
+{
+	int16_t nMsgID;
+	std::string strMsgData;
+};
+
 
 // a thread class that will periodically send events to the GUI thread
 class NetWorkThread : public wxThread
@@ -26,6 +34,10 @@ class NetWorkThread : public wxThread
 
 	std::string m_strIP;
 	unsigned short      m_nPort;
+
+	wxMutex		m_Mutex;
+	std::queue<NetMsg>	m_MsgList;
+
 public:
 	NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort );
 
@@ -34,6 +46,7 @@ public:
 
 	void OnSockEventHandler(const int nSockIndex, const NF_NET_EVENT e, NFINet* p);
 
+	void SendMsg( int16_t nMsgID,const std::string& msgData );
 
 
 	void Stop(){

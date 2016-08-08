@@ -7,6 +7,7 @@
 #include <wx/utils.h> 
 
 #include "NetWorkThread.h"
+#include "NFMsg.pb.h"
 ///////////////////////////////////////////////////////////////////////////
 BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CLOSE(Dlg::OnClose)
@@ -14,7 +15,7 @@ BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CHOICE(WX_ID_MSG_CHOICE, Dlg::OnMsgSelected)
 	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnLogin)
 	EVT_BUTTON(WX_ID_BTN_SEND, Dlg::OnBtnSend)
-	EVT_COMMAND  (ID_RECV_PROTOCOL_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
+	EVT_COMMAND(ID_RECV_PROTOCOL_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
 END_EVENT_TABLE()
 
 
@@ -34,14 +35,14 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText1->Wrap(-1);
 	bSizer4->Add(m_staticText1, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("10.103.252.92"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerIPCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Port:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText2->Wrap(-1);
 	bSizer4->Add(m_staticText2, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerPortCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerPortCtrl = new wxTextCtrl(this, wxID_ANY, wxString("8100"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerPortCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText3 = new wxStaticText(this, wxID_ANY, wxT("UserName:"), wxDefaultPosition, wxDefaultSize, 0);
@@ -96,7 +97,13 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_pFGSizer = new wxFlexGridSizer(40,2,2,2);
 	bSizer7->Add(m_pFGSizer, 0, wxALL, 5);
 
+	wxStaticText* pStatic = new wxStaticText(this, wxID_ANY, wxString("Msg ID:"), wxDefaultPosition, wxDefaultSize, 0);
+	pStatic->Wrap(-1);
+	m_pFGSizer->Add(pStatic);
 
+	m_pMsgIDCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	m_pFGSizer->Add(m_pMsgIDCtrl);
+	
 	wxStaticLine* m_staticline2 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 	bSizer7->Add(m_staticline2, 0, wxEXPAND | wxALL, 5);
 	
@@ -116,6 +123,17 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 
 Dlg::~Dlg()
 {
+	if (m_pNetWorkThrd)
+	{
+		m_pNetWorkThrd->Stop();
+		while (m_pNetWorkThrd->IsRunning())
+		{
+			wxMicroSleep(100);
+		}
+		//delete m_pNetWorkThrd;
+		m_pNetWorkThrd = nullptr;
+	}
+
 	ProtocolManager::Instance()->ReleaseInstance();
 }
 
@@ -217,7 +235,35 @@ void Dlg::OnBtnLogin(wxCommandEvent& event)
 
 void Dlg::OnBtnSend(wxCommandEvent& event)
 {
+	std::vector<std::string> fieldValueList;
 
+	for (size_t i=0;i<m_FieldList.size();i++)
+	{
+		if(m_FieldList.at(i).pTextCtrl&&
+			m_FieldList.at(i).pTextCtrl->IsShown()&&
+			m_FieldList.at(i).pTextCtrl->IsEnabled())
+		{
+			fieldValueList.push_back( m_FieldList.at(i).pTextCtrl->GetValue().ToStdString() );
+		}
+	}
+
+	unsigned long nMsgID;
+	m_pMsgIDCtrl->GetValue().ToULong(&nMsgID);
+
+	wxString strProtoMsgName = m_pProtoMsgChoice->GetString( m_pProtoMsgChoice->GetCurrentSelection() );
+
+	MessagePtr pMsg = ProtocolManager::Instance()->FillProtoMsg(strProtoMsgName.ToStdString(), fieldValueList);
+	if (pMsg)
+	{
+		std::string strMsgData = pMsg->SerializeAsString();
+
+		NFMsg::MsgBase msg;
+		msg.set_msg_data(strMsgData);
+		msg.mutable_player_id()->set_index(0);
+		msg.mutable_player_id()->set_svrid(0);
+		
+		m_pNetWorkThrd->SendMsg(nMsgID,msg.SerializeAsString());
+	}
 }
 
 void Dlg::OnNetWorkMsg(wxCommandEvent& event)

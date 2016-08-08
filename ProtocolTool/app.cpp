@@ -24,7 +24,7 @@ bool MyApp::OnInit()
 }
 
 int MyApp::OnExit()
-{
+{	
 	google::protobuf::ShutdownProtobufLibrary();
 
 	return 0;

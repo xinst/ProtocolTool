@@ -130,6 +130,7 @@ wsock32.lib
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWorkThread.cpp" />
     <ClCompile Include="NFCNet.cpp" />
+    <ClCompile Include="NFMsg.pb.cc" />
     <ClCompile Include="ProtocolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +139,7 @@ wsock32.lib
     <ClInclude Include="NetWorkThread.h" />
     <ClInclude Include="NFCNet.h" />
     <ClInclude Include="NFINet.h" />
+    <ClInclude Include="NFMsg.pb.h" />
     <ClInclude Include="NFSingleton.h" />
     <ClInclude Include="ProtocolManager.h" />
     <ClInclude Include="stdwx.h" />

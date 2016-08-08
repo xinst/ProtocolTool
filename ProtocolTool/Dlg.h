@@ -139,6 +139,7 @@ private:
 	wxButton* m_button3;
 	wxListBox* m_pListBoxCtrl;
 	wxFlexGridSizer* m_pFGSizer;
+	wxTextCtrl*	m_pMsgIDCtrl;
 };
 
 #endif //__NONAME_H__
