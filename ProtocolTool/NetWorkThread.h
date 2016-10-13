@@ -11,14 +11,20 @@
 #include <atomic>
 #include <wx/thread.h>
 #include <queue>
-#include "NFINet.h"
-class NFCNet;
+#include "SGFINet.h"
+class SGFNet;
 
-const int ID_RECV_PROTOCOL_MSG = 100000;
+#define MAKE_MSG_ID(msg_type,msg_id)      (((msg_type)<<8)|(msg_id))
+#define GET_MSG_TYPE(raw_val)			  (((raw_val)>>8)&0x0000ffff)
+#define GET_MSG_ID(raw_val)				  ((raw_val)&0x000000ff)
+
+const int ID_RECV_CONNECT_MSG = 100000;
+const int ID_RECV_LOGIN_MSG = 100001;
+const int ID_RECV_PROTO_MSG = 100002;
 
 struct NetMsg
 {
-	int16_t nMsgID;
+	ui32 nMsgID;
 	std::string strMsgData;
 };
 
@@ -28,9 +34,8 @@ class NetWorkThread : public wxThread
 {
 	wxDialog* m_parent;
 	std::atomic_bool m_bStop;
-	std::atomic_int m_nState;
 
-	NFCNet*	m_pNet;
+	SGFNet*	m_pNet;
 
 	std::string m_strIP;
 	unsigned short      m_nPort;
@@ -41,12 +46,12 @@ class NetWorkThread : public wxThread
 public:
 	NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort );
 
-	void OnRecvMsgHandler(const int nSockIndex, const int nMsgID, const char* msg, const uint32_t nLen);
+	void OnRecvMsgHandler(const int nSockIndex, const ui32 nMsgID, const char* msg, const uint32_t nLen);
 
 
-	void OnSockEventHandler(const int nSockIndex, const NF_NET_EVENT e, NFINet* p);
+	void OnSockEventHandler(const int nSockIndex, const SGF_NET_EVENT e, SGFINet* p);
 
-	void SendMsg( int16_t nMsgID,const std::string& msgData );
+	void SendMsg( ui32 nMsgID,const std::string& msgData );
 
 
 	void Stop(){

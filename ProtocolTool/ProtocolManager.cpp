@@ -126,15 +126,15 @@ MessagePtr ProtocolManager::FillProtoMsg(const std::string& proto_full_filename,
 
 				field = pMsgDesc->FindFieldByName(strFieldName);
 								
-				const int cppType = pMsgDesc->field(n)->cpp_type();
-				switch (cppType)
+				const int pbType = pMsgDesc->field(n)->type();
+				switch (pbType)
 				{
-				case FieldDescriptor::CPPTYPE_BOOL:
+				case FieldDescriptor::TYPE_BOOL:
 				{
 					reflection->SetBool(pRealMsg.get(), field, (strFieldValue.compare("true") == 0) ? true : false);
 				}
 				break;
-				case FieldDescriptor::CPPTYPE_UINT32:
+				case FieldDescriptor::TYPE_UINT32:
 				{
 					uint32 nValue = atol(strFieldValue.c_str());
 					if (pMsgDesc->field(n)->label()==FieldDescriptor::Label::LABEL_REPEATED)
@@ -147,7 +147,7 @@ MessagePtr ProtocolManager::FillProtoMsg(const std::string& proto_full_filename,
 					}
 				}
 				break;
-				case FieldDescriptor::CPPTYPE_UINT64:
+				case FieldDescriptor::TYPE_UINT64:
 				{
 					uint64 nValue = atoll(strFieldValue.c_str());
 					if (pMsgDesc->field(n)->label() == FieldDescriptor::Label::LABEL_REPEATED)
@@ -161,17 +161,18 @@ MessagePtr ProtocolManager::FillProtoMsg(const std::string& proto_full_filename,
 					}
 				}
 				break;
-				case FieldDescriptor::CPPTYPE_STRING:
+				case FieldDescriptor::TYPE_STRING:
+				case FieldDescriptor::TYPE_BYTES:
 				{
 					reflection->SetString(pRealMsg.get(), field, strFieldValue);
 				}
 				break;
-				case FieldDescriptor::CPPTYPE_ENUM:
-				case FieldDescriptor::CPPTYPE_MESSAGE:
-				case FieldDescriptor::CPPTYPE_DOUBLE:
-				case FieldDescriptor::CPPTYPE_FLOAT:
-				case FieldDescriptor::CPPTYPE_INT32:
-				case FieldDescriptor::CPPTYPE_INT64:
+				case FieldDescriptor::TYPE_ENUM:
+				case FieldDescriptor::TYPE_MESSAGE:
+				case FieldDescriptor::TYPE_DOUBLE:
+				case FieldDescriptor::TYPE_FLOAT:
+				case FieldDescriptor::TYPE_INT32:
+				case FieldDescriptor::TYPE_INT64:
 					{
 						return nullptr;
 					}
@@ -367,7 +368,7 @@ MsgInfo ProtocolManager::GetProtoMessageInfo(const std::string& proto_full_filen
 	return MsgInfo();
 }
 
-MsgInfo ProtocolManager::GetProtoMessageInfo(const string& msgFullName)
+MsgInfo ProtocolManager::GetProtoMessageInfo(const std::string& msgFullName)
 {
 	wxString strFullProtoName = GetProtoFullNameFromMsgName(msgFullName);
 	return GetProtoMessageInfo(strFullProtoName.ToStdString(),msgFullName);

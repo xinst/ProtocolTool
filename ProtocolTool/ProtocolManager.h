@@ -18,7 +18,7 @@
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/compiler/importer.h>
 
-#include "NFSingleton.h"
+#include "SGFSingleton.h"
 
 using namespace std;
 
@@ -47,7 +47,7 @@ struct MsgInfo
 
 typedef std::shared_ptr<MsgInfo> MsgInfoPtr;
 
-class ProtocolManager : public NFSingleton<ProtocolManager>
+class ProtocolManager : public SGFSingleton<ProtocolManager>
 {
 public:
 	ProtocolManager();
@@ -69,18 +69,18 @@ public:
 	
 	std::vector<std::string> GetProtocolMessageList( const std::string& proto_full_filename="" );	
 
-	bool GetFieldsFromProtoFile(const string& msgFullName, std::vector<MsgField>& fields);
-	MsgInfo GetProtoMessageInfo(const string& msgFullName);
+	bool GetFieldsFromProtoFile(const std::string& msgFullName, std::vector<MsgField>& fields);
+	MsgInfo GetProtoMessageInfo(const std::string& msgFullName);
 
 private:
 
 	bool MakeInputsBeProtoPathRelative(DiskSourceTree* source_tree, std::string& protoFile);
 	
-	bool GetDescFromProtoFile(const string& proto_full_filename, FileDescriptorProto* file_desc_proto);
+	bool GetDescFromProtoFile(const std::string& proto_full_filename, FileDescriptorProto* file_desc_proto);
 
-	bool GetMsgListFromProtoFile(const string& proto_full_filename, std::vector<std::string>& msgNameList);
+	bool GetMsgListFromProtoFile(const std::string& proto_full_filename, std::vector<std::string>& msgNameList);
 
-	bool GetFieldsFromProtoFile(const string& proto_full_filename, const string& msgName, std::vector<MsgField>& fields);
+	bool GetFieldsFromProtoFile(const std::string& proto_full_filename, const std::string& msgName, std::vector<MsgField>& fields);
 
 	wxString GetProtoFullNameFromMsgName(const std::string& strMsgName);
 	std::vector<std::string> GetProtocolsFromDir(const std::string& dirName);

@@ -102,7 +102,13 @@ protected:
 
 	void OnBtnLogin(wxCommandEvent& event);
 	void OnBtnSend(wxCommandEvent& event);
+
+
 	void OnNetWorkMsg(wxCommandEvent& event);
+	void OnProtoMsg(wxCommandEvent& event);
+	void OnLoginMsg(wxCommandEvent& event);
+
+	void DestoryThread(NetWorkThread*& p);
 
 
 public:
@@ -122,6 +128,8 @@ private:
 	std::vector<FieldCtrl>	m_FieldList;
 	NetWorkThread*			m_pNetWorkThrd;
 
+	NetWorkThread*			m_pLoginThrd;
+
 private:
 	wxStaticText* m_staticText1;
 	wxTextCtrl* m_pServerIPCtrl;
@@ -136,7 +144,7 @@ private:
 	wxDirPickerCtrl* m_pDirCtrl;
 	wxStaticText* m_staticText6;
 	wxChoice* m_pProtoMsgChoice;
-	wxButton* m_button3;
+	wxButton* m_pBtnSend;
 	wxListBox* m_pListBoxCtrl;
 	wxFlexGridSizer* m_pFGSizer;
 	wxTextCtrl*	m_pMsgIDCtrl;

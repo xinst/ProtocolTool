@@ -7,7 +7,9 @@
 #include <wx/utils.h> 
 
 #include "NetWorkThread.h"
-#include "NFMsg.pb.h"
+#include "SGFMsgBase.pb.h"
+#include "CommGameMsg.pb.h"
+
 ///////////////////////////////////////////////////////////////////////////
 BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CLOSE(Dlg::OnClose)
@@ -15,7 +17,9 @@ BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CHOICE(WX_ID_MSG_CHOICE, Dlg::OnMsgSelected)
 	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnLogin)
 	EVT_BUTTON(WX_ID_BTN_SEND, Dlg::OnBtnSend)
-	EVT_COMMAND(ID_RECV_PROTOCOL_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
+	EVT_COMMAND(ID_RECV_CONNECT_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
+	EVT_COMMAND(ID_RECV_PROTO_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnProtoMsg)
+	EVT_COMMAND(ID_RECV_LOGIN_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnLoginMsg)
 END_EVENT_TABLE()
 
 
@@ -35,7 +39,7 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText1->Wrap(-1);
 	bSizer4->Add(m_staticText1, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("10.103.252.92"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("127.0.0.1"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerIPCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Port:"), wxDefaultPosition, wxDefaultSize, 0);
@@ -83,8 +87,9 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_pProtoMsgChoice = new wxChoice(this, WX_ID_MSG_CHOICE, wxDefaultPosition, wxDefaultSize, m_pProtoMsgChoiceChoices, wxCB_SORT);
 	bSizer5->Add(m_pProtoMsgChoice, 1, wxALIGN_CENTER | wxLEFT | wxRIGHT, 5);
 
-	m_button3 = new wxButton(this, WX_ID_BTN_SEND, wxT("Send"), wxDefaultPosition, wxDefaultSize, 0);
-	bSizer5->Add(m_button3, 0, wxALIGN_CENTER | wxALL, 5);	
+	m_pBtnSend = new wxButton(this, WX_ID_BTN_SEND, wxT("Send"), wxDefaultPosition, wxDefaultSize, 0);
+	bSizer5->Add(m_pBtnSend, 0, wxALIGN_CENTER | wxALL, 5);	
+	m_pBtnSend->Enable(false);
 
 	bSizer1->Add(bSizer5, 0, wxEXPAND, 5);
 	
@@ -119,20 +124,13 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	this->Layout();	
 
 	m_pNetWorkThrd = nullptr;
+	m_pLoginThrd = nullptr;
 }
 
 Dlg::~Dlg()
 {
-	if (m_pNetWorkThrd)
-	{
-		m_pNetWorkThrd->Stop();
-		while (m_pNetWorkThrd->IsRunning())
-		{
-			wxMicroSleep(100);
-		}
-		//delete m_pNetWorkThrd;
-		m_pNetWorkThrd = nullptr;
-	}
+	DestoryThread(m_pLoginThrd);
+	DestoryThread(m_pNetWorkThrd);
 
 	ProtocolManager::Instance()->ReleaseInstance();
 }
@@ -212,11 +210,12 @@ void Dlg::InitProtocolField(const wxString& strMsgName)
 
 void Dlg::OnBtnLogin(wxCommandEvent& event)
 {
+	DestoryThread(m_pLoginThrd);
 	// create the thread
 	unsigned long nPort = 0;
 	m_pServerPortCtrl->GetValue().ToULong(&nPort);
-	m_pNetWorkThrd = new NetWorkThread(this,m_pServerIPCtrl->GetValue().ToStdString(),nPort);
-	wxThreadError err = m_pNetWorkThrd->Create();
+	m_pLoginThrd = new NetWorkThread(this,m_pServerIPCtrl->GetValue().ToStdString(),nPort);
+	wxThreadError err = m_pLoginThrd->Create();
 
 	if (err != wxTHREAD_NO_ERROR)
 	{
@@ -224,7 +223,7 @@ void Dlg::OnBtnLogin(wxCommandEvent& event)
 		return;
 	}
 
-	err = m_pNetWorkThrd->Run();
+	err = m_pLoginThrd->Run();
 
 	if (err != wxTHREAD_NO_ERROR)
 	{
@@ -248,7 +247,7 @@ void Dlg::OnBtnSend(wxCommandEvent& event)
 	}
 
 	unsigned long nMsgID;
-	m_pMsgIDCtrl->GetValue().ToULong(&nMsgID);
+	m_pMsgIDCtrl->GetValue().ToULong(&nMsgID,16);
 
 	wxString strProtoMsgName = m_pProtoMsgChoice->GetString( m_pProtoMsgChoice->GetCurrentSelection() );
 
@@ -257,7 +256,7 @@ void Dlg::OnBtnSend(wxCommandEvent& event)
 	{
 		std::string strMsgData = pMsg->SerializeAsString();
 
-		NFMsg::MsgBase msg;
+		SGFMsg::MsgBase msg;
 		msg.set_msg_data(strMsgData);
 		msg.mutable_player_id()->set_index(0);
 		msg.mutable_player_id()->set_svrid(0);
@@ -270,6 +269,66 @@ void Dlg::OnNetWorkMsg(wxCommandEvent& event)
 {
 	if (m_pListBoxCtrl)
 	{
-		m_pListBoxCtrl->Append(event.GetString());
+		wxString strMsgID = wxString::Format("recv:%#x",event.GetInt());
+		m_pListBoxCtrl->Append(strMsgID);
+	}
+}
+
+void Dlg::OnProtoMsg(wxCommandEvent& event)
+{
+	if (m_pListBoxCtrl)
+	{
+		wxString strMsgID = wxString::Format("recv:%#x", event.GetInt());
+		m_pListBoxCtrl->Append(strMsgID);
+	}
+}
+
+void Dlg::OnLoginMsg(wxCommandEvent& event)
+{
+	SGFMsg::MsgBase xMsg;
+	if (xMsg.ParseFromArray(event.GetString().c_str(),event.GetString().length()))
+	{
+		SGFMsg::AccountLoginRes res;
+		if(res.ParseFromString(xMsg.msg_data()))
+		{
+			DestoryThread(m_pNetWorkThrd);
+			// create the thread
+			unsigned long nPort = res.port();
+
+			m_pNetWorkThrd = new NetWorkThread(this, res.ip(),res.port());
+			wxThreadError err = m_pNetWorkThrd->Create();
+
+			if (err != wxTHREAD_NO_ERROR)
+			{
+				wxMessageBox(_("Couldn't create thread!"));
+				return;
+			}
+
+			err = m_pNetWorkThrd->Run();
+
+			if (err != wxTHREAD_NO_ERROR)
+			{
+				wxMessageBox(_("Couldn't run thread!"));
+				return;
+			}
+
+			DestoryThread(m_pLoginThrd);
+
+			m_pBtnSend->Enable(true);
+		}
+	}
+}
+
+void Dlg::DestoryThread(NetWorkThread*& p)
+{
+	if (p)
+	{
+		p->Stop();
+		while (p->IsRunning())
+		{
+			wxMicroSleep(100);
+		}
+		//delete m_pNetWorkThrd;
+		p = nullptr;
 	}
 }

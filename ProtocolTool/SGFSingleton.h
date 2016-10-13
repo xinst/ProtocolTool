@@ -1,23 +1,15 @@
-// -------------------------------------------------------------------------
-//    @FileName         :    NFSingleton.h
-//    @Author           :    LvSheng.Huang
-//    @Date             :    2011-01-21
-//    @Module           :    NFSingleton
-//
-// -------------------------------------------------------------------------
-
-#ifndef NF_SINGLETON_H
-#define NF_SINGLETON_H
+#ifndef SGF_SINGLETON_H
+#define SGF_SINGLETON_H
 
 #include <iostream>
 
 template <class T>
-class NFSingleton
+class SGFSingleton
 {
 
 public:
 
-    NFSingleton()
+    SGFSingleton()
     {
         //assert( !m_instance );
         // 下面是判断VC++编译器版本，版本不同相应的处理也不同
@@ -29,7 +21,7 @@ public:
 #endif
     }
 
-    ~NFSingleton()
+    ~SGFSingleton()
     {
         //assert( m_instance );
         m_pInstance = NULL;
@@ -73,6 +65,6 @@ private:
 };
 
 template <class T>
-T* NFSingleton<T>::m_pInstance = NULL;
+T* SGFSingleton<T>::m_pInstance = NULL;
 
-#endif
+#endif//SGF_SINGLETON_H

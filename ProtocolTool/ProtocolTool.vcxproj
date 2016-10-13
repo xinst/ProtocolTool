@@ -59,27 +59,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXMSW)\lib\vc_lib;..\protobuf\vsprojects\Debug;..\libevent</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxbase30ud_net.lib;
-wxmsw30ud_html.lib;
-wxbase30ud_xml.lib;
-wxmsw30ud_adv.lib
-;wxmsw30ud_aui.lib;
-wxmsw30ud_gl.lib
-;wxmsw30ud_media.lib
-;wxmsw30ud_propgrid.lib;
-wxmsw30ud_qa.lib;wxmsw30ud_ribbon.lib;
-wxmsw30ud_richtext.lib;
-wxmsw30ud_stc.lib;wxmsw30ud_xrc.lib;
-wxscintillad.lib
-;wxmsw30ud_core.lib;
-wxbase30ud.lib
-;wxtiffd.lib
-;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;
-wxexpatd.lib;winmm.lib
-;comctl32.lib;
-rpcrt4.lib;
-wsock32.lib
-;odbc32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;ws2_32.lib;wldap32.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxbase30ud_net.lib;wxmsw30ud_html.lib;wxbase30ud_xml.lib;wxmsw30ud_adv.lib;wxmsw30ud_aui.lib;wxmsw30ud_gl.lib;wxmsw30ud_media.lib;wxmsw30ud_propgrid.lib;wxmsw30ud_qa.lib;wxmsw30ud_ribbon.lib;wxmsw30ud_richtext.lib;wxmsw30ud_stc.lib;wxmsw30ud_xrc.lib;wxscintillad.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;ws2_32.lib;wldap32.lib;libprotobuf.lib;libevent.lib;libevent_core.lib;libevent_extras.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -126,22 +106,26 @@ wsock32.lib
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="CommGameMsg.pb.cc" />
     <ClCompile Include="Dlg.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWorkThread.cpp" />
-    <ClCompile Include="NFCNet.cpp" />
-    <ClCompile Include="NFMsg.pb.cc" />
     <ClCompile Include="ProtocolManager.cpp" />
+    <ClCompile Include="SGFMsgBase.pb.cc" />
+    <ClCompile Include="SGFNet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="CommGameMsg.pb.h" />
     <ClInclude Include="Dlg.h" />
+    <ClInclude Include="NetObject.h" />
     <ClInclude Include="NetWorkThread.h" />
-    <ClInclude Include="NFCNet.h" />
-    <ClInclude Include="NFINet.h" />
-    <ClInclude Include="NFMsg.pb.h" />
-    <ClInclude Include="NFSingleton.h" />
     <ClInclude Include="ProtocolManager.h" />
+    <ClInclude Include="SGFINet.h" />
+    <ClInclude Include="SGFMsgBase.pb.h" />
+    <ClInclude Include="SGFMsgHeader.h" />
+    <ClInclude Include="SGFNet.h" />
+    <ClInclude Include="SGFSingleton.h" />
     <ClInclude Include="stdwx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
