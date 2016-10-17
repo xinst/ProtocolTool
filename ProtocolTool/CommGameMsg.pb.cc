@@ -29,6 +29,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* AccountLoginRes_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   AccountLoginRes_reflection_ = NULL;
+const ::google::protobuf::Descriptor* EnterPlazaReq_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  EnterPlazaReq_reflection_ = NULL;
 
 }  // namespace
 
@@ -94,6 +97,21 @@ void protobuf_AssignDesc_CommGameMsg_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(AccountLoginRes));
+  EnterPlazaReq_descriptor_ = file->message_type(3);
+  static const int EnterPlazaReq_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EnterPlazaReq, game_token_),
+  };
+  EnterPlazaReq_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      EnterPlazaReq_descriptor_,
+      EnterPlazaReq::default_instance_,
+      EnterPlazaReq_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EnterPlazaReq, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EnterPlazaReq, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(EnterPlazaReq));
 }
 
 namespace {
@@ -112,6 +130,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     AccountLoginReq_descriptor_, &AccountLoginReq::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     AccountLoginRes_descriptor_, &AccountLoginRes::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    EnterPlazaReq_descriptor_, &EnterPlazaReq::default_instance());
 }
 
 }  // namespace
@@ -123,6 +143,8 @@ void protobuf_ShutdownFile_CommGameMsg_2eproto() {
   delete AccountLoginReq_reflection_;
   delete AccountLoginRes::default_instance_;
   delete AccountLoginRes_reflection_;
+  delete EnterPlazaReq::default_instance_;
+  delete EnterPlazaReq_reflection_;
 }
 
 void protobuf_AddDesc_CommGameMsg_2eproto() {
@@ -131,25 +153,27 @@ void protobuf_AddDesc_CommGameMsg_2eproto() {
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  ::SGFMsg::protobuf_AddDesc_SGFMsgBase_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021CommGameMsg.proto\022\006SGFMsg\032\020SGFMsgBase."
-    "proto\"F\n\016AckEventResult\022\020\n\010evt_code\030\001 \002("
-    "\005\022\017\n\007nParam1\030\002 \001(\005\022\021\n\tstrParam1\030\003 \001(\t\"\221\001"
-    "\n\017AccountLoginReq\022\025\n\rclientVersion\030\003 \001(\005"
-    "\022\025\n\rsecurity_code\030\004 \001(\014\022\021\n\tloginMode\030\005 \001"
-    "(\005\022\023\n\013device_info\030\010 \001(\014\022\022\n\nextra_info\030\t "
-    "\001(\014\022\024\n\014access_token\030\n \001(\014\"N\n\017AccountLogi"
-    "nRes\022\r\n\005state\030\001 \002(\005\022\n\n\002ip\030\002 \001(\t\022\014\n\004port\030"
-    "\003 \001(\005\022\022\n\ngame_token\030\004 \001(\014", 345);
+    "\n\021CommGameMsg.proto\022\006SGFMsg\"F\n\016AckEventR"
+    "esult\022\020\n\010evt_code\030\001 \002(\005\022\017\n\007nParam1\030\002 \001(\005"
+    "\022\021\n\tstrParam1\030\003 \001(\t\"\221\001\n\017AccountLoginReq\022"
+    "\025\n\rclientVersion\030\003 \001(\005\022\025\n\rsecurity_code\030"
+    "\004 \001(\014\022\021\n\tloginMode\030\005 \001(\005\022\023\n\013device_info\030"
+    "\010 \001(\014\022\022\n\nextra_info\030\t \001(\014\022\024\n\014access_toke"
+    "n\030\n \001(\014\"N\n\017AccountLoginRes\022\r\n\005state\030\001 \002("
+    "\005\022\n\n\002ip\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\022\022\n\ngame_toke"
+    "n\030\004 \001(\014\"#\n\rEnterPlazaReq\022\022\n\ngame_token\030\001"
+    " \002(\014", 364);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "CommGameMsg.proto", &protobuf_RegisterTypes);
   AckEventResult::default_instance_ = new AckEventResult();
   AccountLoginReq::default_instance_ = new AccountLoginReq();
   AccountLoginRes::default_instance_ = new AccountLoginRes();
+  EnterPlazaReq::default_instance_ = new EnterPlazaReq();
   AckEventResult::default_instance_->InitAsDefaultInstance();
   AccountLoginReq::default_instance_->InitAsDefaultInstance();
   AccountLoginRes::default_instance_->InitAsDefaultInstance();
+  EnterPlazaReq::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_CommGameMsg_2eproto);
 }
 
@@ -1256,6 +1280,223 @@ void AccountLoginRes::Swap(AccountLoginRes* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = AccountLoginRes_descriptor_;
   metadata.reflection = AccountLoginRes_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int EnterPlazaReq::kGameTokenFieldNumber;
+#endif  // !_MSC_VER
+
+EnterPlazaReq::EnterPlazaReq()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void EnterPlazaReq::InitAsDefaultInstance() {
+}
+
+EnterPlazaReq::EnterPlazaReq(const EnterPlazaReq& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void EnterPlazaReq::SharedCtor() {
+  _cached_size_ = 0;
+  game_token_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+EnterPlazaReq::~EnterPlazaReq() {
+  SharedDtor();
+}
+
+void EnterPlazaReq::SharedDtor() {
+  if (game_token_ != &::google::protobuf::internal::kEmptyString) {
+    delete game_token_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void EnterPlazaReq::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* EnterPlazaReq::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return EnterPlazaReq_descriptor_;
+}
+
+const EnterPlazaReq& EnterPlazaReq::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_CommGameMsg_2eproto();
+  return *default_instance_;
+}
+
+EnterPlazaReq* EnterPlazaReq::default_instance_ = NULL;
+
+EnterPlazaReq* EnterPlazaReq::New() const {
+  return new EnterPlazaReq;
+}
+
+void EnterPlazaReq::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_game_token()) {
+      if (game_token_ != &::google::protobuf::internal::kEmptyString) {
+        game_token_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool EnterPlazaReq::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required bytes game_token = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_game_token()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void EnterPlazaReq::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required bytes game_token = 1;
+  if (has_game_token()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+      1, this->game_token(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* EnterPlazaReq::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required bytes game_token = 1;
+  if (has_game_token()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        1, this->game_token(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int EnterPlazaReq::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required bytes game_token = 1;
+    if (has_game_token()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->game_token());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void EnterPlazaReq::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const EnterPlazaReq* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const EnterPlazaReq*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void EnterPlazaReq::MergeFrom(const EnterPlazaReq& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_game_token()) {
+      set_game_token(from.game_token());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void EnterPlazaReq::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void EnterPlazaReq::CopyFrom(const EnterPlazaReq& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool EnterPlazaReq::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void EnterPlazaReq::Swap(EnterPlazaReq* other) {
+  if (other != this) {
+    std::swap(game_token_, other->game_token_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata EnterPlazaReq::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = EnterPlazaReq_descriptor_;
+  metadata.reflection = EnterPlazaReq_reflection_;
   return metadata;
 }
 

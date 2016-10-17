@@ -15,7 +15,7 @@ BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CLOSE(Dlg::OnClose)
 	EVT_DIRPICKER_CHANGED(WX_ID_DIR_PICKER,Dlg::OnProtoDirSelected)
 	EVT_CHOICE(WX_ID_MSG_CHOICE, Dlg::OnMsgSelected)
-	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnLogin)
+	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnConnect)
 	EVT_BUTTON(WX_ID_BTN_SEND, Dlg::OnBtnSend)
 	EVT_COMMAND(ID_RECV_CONNECT_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
 	EVT_COMMAND(ID_RECV_PROTO_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnProtoMsg)
@@ -39,21 +39,21 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText1->Wrap(-1);
 	bSizer4->Add(m_staticText1, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("127.0.0.1"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("192.168.5.21"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerIPCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Port:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText2->Wrap(-1);
 	bSizer4->Add(m_staticText2, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerPortCtrl = new wxTextCtrl(this, wxID_ANY, wxString("8100"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerPortCtrl = new wxTextCtrl(this, wxID_ANY, wxString("8500"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerPortCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText3 = new wxStaticText(this, wxID_ANY, wxT("UserName:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText3->Wrap(-1);
 	bSizer4->Add(m_staticText3, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pUserNameCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_pUserNameCtrl = new wxTextCtrl(this, wxID_ANY, wxString("aaabbb"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pUserNameCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText4 = new wxStaticText(this, wxID_ANY, wxT("Password:"), wxDefaultPosition, wxDefaultSize, 0);
@@ -63,7 +63,7 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_pPwdCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pPwdCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 	
-	m_pBtnLogin = new wxButton(this, WX_ID_BTN_LOGIN, wxT("Login"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pBtnLogin = new wxButton(this, WX_ID_BTN_LOGIN, wxT("Connect"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pBtnLogin, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL, 5);
 
 
@@ -208,13 +208,13 @@ void Dlg::InitProtocolField(const wxString& strMsgName)
 	Layout();
 }
 
-void Dlg::OnBtnLogin(wxCommandEvent& event)
+void Dlg::OnBtnConnect(wxCommandEvent& event)
 {
 	DestoryThread(m_pLoginThrd);
 	// create the thread
 	unsigned long nPort = 0;
 	m_pServerPortCtrl->GetValue().ToULong(&nPort);
-	m_pLoginThrd = new NetWorkThread(this,m_pServerIPCtrl->GetValue().ToStdString(),nPort);
+	m_pLoginThrd = new NetWorkThread(this,m_pServerIPCtrl->GetValue().ToStdString(),nPort,true);
 	wxThreadError err = m_pLoginThrd->Create();
 
 	if (err != wxTHREAD_NO_ERROR)
@@ -269,8 +269,30 @@ void Dlg::OnNetWorkMsg(wxCommandEvent& event)
 {
 	if (m_pListBoxCtrl)
 	{
-		wxString strMsgID = wxString::Format("recv:%#x",event.GetInt());
-		m_pListBoxCtrl->Append(strMsgID);
+		m_pListBoxCtrl->Append(event.GetString());
+
+		SGFMsg::MsgBase msg;
+		msg.mutable_player_id()->set_index(0);
+		msg.mutable_player_id()->set_svrid(0);
+
+		if (event.GetInt()==100)
+		{			
+			SGFMsg::AccountLoginReq req;
+			req.set_access_token(m_pUserNameCtrl->GetValue().ToStdString());
+			//send login msg
+			req.SerializeToString(msg.mutable_msg_data());
+
+			m_pLoginThrd->SendMsg(MAKE_MSG_ID(0x0FFF,0x01), msg.SerializeAsString());
+		}
+		else if (event.GetInt()==200)
+		{
+			SGFMsg::EnterPlazaReq req;
+			req.set_game_token(m_strCurGameToken);
+
+			req.SerializeToString(msg.mutable_msg_data());
+
+			m_pNetWorkThrd->SendMsg(MAKE_MSG_ID(0x1000, 0x20), msg.SerializeAsString());
+		}
 	}
 }
 
@@ -286,14 +308,19 @@ void Dlg::OnProtoMsg(wxCommandEvent& event)
 void Dlg::OnLoginMsg(wxCommandEvent& event)
 {
 	SGFMsg::MsgBase xMsg;
-	if (xMsg.ParseFromArray(event.GetString().c_str(),event.GetString().length()))
+	if (xMsg.ParseFromArray((char*)event.GetClientData(),event.GetExtraLong()))
 	{
 		SGFMsg::AccountLoginRes res;
 		if(res.ParseFromString(xMsg.msg_data()))
 		{
 			DestoryThread(m_pNetWorkThrd);
 			// create the thread
-			unsigned long nPort = res.port();
+			m_strCurGameToken = res.game_token();
+			std::cout << "Token:" << m_strCurGameToken << std::endl;
+			
+			m_pListBoxCtrl->Append(wxString(res.game_token()));
+
+			m_pBtnSend->Enable(true);
 
 			m_pNetWorkThrd = new NetWorkThread(this, res.ip(),res.port());
 			wxThreadError err = m_pNetWorkThrd->Create();
@@ -313,8 +340,6 @@ void Dlg::OnLoginMsg(wxCommandEvent& event)
 			}
 
 			DestoryThread(m_pLoginThrd);
-
-			m_pBtnSend->Enable(true);
 		}
 	}
 }

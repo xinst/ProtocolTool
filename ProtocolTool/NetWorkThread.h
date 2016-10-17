@@ -42,9 +42,10 @@ class NetWorkThread : public wxThread
 
 	wxMutex		m_Mutex;
 	std::queue<NetMsg>	m_MsgList;
+	bool	m_bLoginThread;
 
 public:
-	NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort );
+	NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort,bool bLoginThread=false );
 
 	void OnRecvMsgHandler(const int nSockIndex, const ui32 nMsgID, const char* msg, const uint32_t nLen);
 

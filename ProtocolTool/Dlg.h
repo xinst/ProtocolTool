@@ -100,7 +100,7 @@ protected:
 
 	void InitProtocolField( const wxString& strMsgName );
 
-	void OnBtnLogin(wxCommandEvent& event);
+	void OnBtnConnect(wxCommandEvent& event);
 	void OnBtnSend(wxCommandEvent& event);
 
 
@@ -129,6 +129,8 @@ private:
 	NetWorkThread*			m_pNetWorkThrd;
 
 	NetWorkThread*			m_pLoginThrd;
+
+	std::string				m_strCurGameToken;
 
 private:
 	wxStaticText* m_staticText1;

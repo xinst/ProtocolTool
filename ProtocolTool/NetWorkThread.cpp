@@ -2,7 +2,7 @@
 #include "NetWorkThread.h"
 #include "SGFNet.h"
 
-NetWorkThread::NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort )
+NetWorkThread::NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort,bool bLoginThread )
 {
 	m_parent = parent;
 	m_bStop = false;
@@ -10,6 +10,7 @@ NetWorkThread::NetWorkThread(wxDialog* parent,const std::string& strIP,int nPort
 
 	m_strIP = strIP;
 	m_nPort = nPort;
+	m_bLoginThread = bLoginThread;
 }
 
 void NetWorkThread::OnRecvMsgHandler(const int nSockIndex, const ui32 nMsgID, const char* msg, const uint32_t nLen)
@@ -19,8 +20,11 @@ void NetWorkThread::OnRecvMsgHandler(const int nSockIndex, const ui32 nMsgID, co
 		//µÇÂ½Ğ­Òé
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, ID_RECV_LOGIN_MSG);
 		event.SetInt(nMsgID);
-		std::string strMsgData(msg,nLen);
-		event.SetString(strMsgData);
+		char* pData = new char[nLen];
+		memset(pData, 0, nLen);
+		memcpy(pData, msg, nLen);
+		event.SetClientData(pData);
+		event.SetExtraLong(nLen);
 		m_parent->GetEventHandler()->AddPendingEvent(event);
 	}
 	else
@@ -36,13 +40,33 @@ void NetWorkThread::OnSockEventHandler(const int nSockIndex, const SGF_NET_EVENT
 	if (e == SGF_NET_EVENT_CONNECTED)
 	{		
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, ID_RECV_CONNECT_MSG);
-		event.SetString("Connect Server OK");
+		if (m_bLoginThread)
+		{
+			event.SetString("Connect LoginServer OK");
+			event.SetInt(100);
+		}
+		else
+		{
+			event.SetString("Connect GatewayServer OK");
+			event.SetInt(200);
+		}
 		m_parent->GetEventHandler()->AddPendingEvent(event);
 	}
 	else 
 	{
 		wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, ID_RECV_CONNECT_MSG);
-		event.SetString("Server Connection err!");
+		
+		if (m_bLoginThread)
+		{
+			event.SetString("Connect LoginServer Err");
+			event.SetInt(10);
+		}
+		else
+		{
+			event.SetString("Connect GatewayServer Err");
+			event.SetInt(20);
+		}
+
 		m_parent->GetEventHandler()->AddPendingEvent(event);
 	}
 }

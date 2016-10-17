@@ -24,7 +24,6 @@
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
 #include <google/protobuf/unknown_field_set.h>
-#include "SGFMsgBase.pb.h"
 // @@protoc_insertion_point(includes)
 
 namespace SGFMsg {
@@ -37,6 +36,7 @@ void protobuf_ShutdownFile_CommGameMsg_2eproto();
 class AckEventResult;
 class AccountLoginReq;
 class AccountLoginRes;
+class EnterPlazaReq;
 
 // ===================================================================
 
@@ -418,6 +418,93 @@ class AccountLoginRes : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static AccountLoginRes* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class EnterPlazaReq : public ::google::protobuf::Message {
+ public:
+  EnterPlazaReq();
+  virtual ~EnterPlazaReq();
+
+  EnterPlazaReq(const EnterPlazaReq& from);
+
+  inline EnterPlazaReq& operator=(const EnterPlazaReq& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const EnterPlazaReq& default_instance();
+
+  void Swap(EnterPlazaReq* other);
+
+  // implements Message ----------------------------------------------
+
+  EnterPlazaReq* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const EnterPlazaReq& from);
+  void MergeFrom(const EnterPlazaReq& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required bytes game_token = 1;
+  inline bool has_game_token() const;
+  inline void clear_game_token();
+  static const int kGameTokenFieldNumber = 1;
+  inline const ::std::string& game_token() const;
+  inline void set_game_token(const ::std::string& value);
+  inline void set_game_token(const char* value);
+  inline void set_game_token(const void* value, size_t size);
+  inline ::std::string* mutable_game_token();
+  inline ::std::string* release_game_token();
+  inline void set_allocated_game_token(::std::string* game_token);
+
+  // @@protoc_insertion_point(class_scope:SGFMsg.EnterPlazaReq)
+ private:
+  inline void set_has_game_token();
+  inline void clear_has_game_token();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::std::string* game_token_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_CommGameMsg_2eproto();
+  friend void protobuf_AssignDesc_CommGameMsg_2eproto();
+  friend void protobuf_ShutdownFile_CommGameMsg_2eproto();
+
+  void InitAsDefaultInstance();
+  static EnterPlazaReq* default_instance_;
 };
 // ===================================================================
 
@@ -1044,6 +1131,80 @@ inline ::std::string* AccountLoginRes::release_game_token() {
   }
 }
 inline void AccountLoginRes::set_allocated_game_token(::std::string* game_token) {
+  if (game_token_ != &::google::protobuf::internal::kEmptyString) {
+    delete game_token_;
+  }
+  if (game_token) {
+    set_has_game_token();
+    game_token_ = game_token;
+  } else {
+    clear_has_game_token();
+    game_token_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// EnterPlazaReq
+
+// required bytes game_token = 1;
+inline bool EnterPlazaReq::has_game_token() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void EnterPlazaReq::set_has_game_token() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void EnterPlazaReq::clear_has_game_token() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void EnterPlazaReq::clear_game_token() {
+  if (game_token_ != &::google::protobuf::internal::kEmptyString) {
+    game_token_->clear();
+  }
+  clear_has_game_token();
+}
+inline const ::std::string& EnterPlazaReq::game_token() const {
+  return *game_token_;
+}
+inline void EnterPlazaReq::set_game_token(const ::std::string& value) {
+  set_has_game_token();
+  if (game_token_ == &::google::protobuf::internal::kEmptyString) {
+    game_token_ = new ::std::string;
+  }
+  game_token_->assign(value);
+}
+inline void EnterPlazaReq::set_game_token(const char* value) {
+  set_has_game_token();
+  if (game_token_ == &::google::protobuf::internal::kEmptyString) {
+    game_token_ = new ::std::string;
+  }
+  game_token_->assign(value);
+}
+inline void EnterPlazaReq::set_game_token(const void* value, size_t size) {
+  set_has_game_token();
+  if (game_token_ == &::google::protobuf::internal::kEmptyString) {
+    game_token_ = new ::std::string;
+  }
+  game_token_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* EnterPlazaReq::mutable_game_token() {
+  set_has_game_token();
+  if (game_token_ == &::google::protobuf::internal::kEmptyString) {
+    game_token_ = new ::std::string;
+  }
+  return game_token_;
+}
+inline ::std::string* EnterPlazaReq::release_game_token() {
+  clear_has_game_token();
+  if (game_token_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = game_token_;
+    game_token_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void EnterPlazaReq::set_allocated_game_token(::std::string* game_token) {
   if (game_token_ != &::google::protobuf::internal::kEmptyString) {
     delete game_token_;
   }
