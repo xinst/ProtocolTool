@@ -86,10 +86,10 @@ wxThread::ExitCode NetWorkThread::Entry()
 {
 	while (!m_bStop)
 	{
-		//if (TestDestroy())
-		//{
-		//	break;
-		//}
+		if (TestDestroy())
+		{
+			break;
+		}
 		this->Sleep(500);
 
 		if (m_strIP.length()>0&&m_nPort!=0)

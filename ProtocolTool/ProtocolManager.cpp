@@ -2,6 +2,7 @@
 #include "ProtocolManager.h"
 #include <iostream>
 #include <wx/dir.h>
+#include <wx/xml/xml.h>
 
 using namespace google::protobuf;
 using namespace google::protobuf::io;
@@ -29,7 +30,7 @@ ProtocolManager::~ProtocolManager()
 bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 {
 	m_DiskSourceTree.MapPath("", strProtocolDir);
-
+	
 	wxDir dir(strProtocolDir);
 
 	wxArrayString fileList;
@@ -43,7 +44,7 @@ bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 
 		std::vector<std::string> msgNames;
 		GetMsgListFromProtoFile(proto_full_fn, msgNames);
-
+		
 		for (int i = 0; i < msgNames.size(); i++)
 		{
 			MsgInfoPtr msgInfo(new MsgInfo);
@@ -153,7 +154,6 @@ MessagePtr ProtocolManager::FillProtoMsg(const std::string& proto_full_filename,
 					if (pMsgDesc->field(n)->label() == FieldDescriptor::Label::LABEL_REPEATED)
 					{
 						reflection->AddUInt64(pRealMsg.get(),field,nValue);
-						//reflection->SetRepeatedUInt64(pRealMsg, field, 0, nValue);
 					}
 					else
 					{
@@ -372,4 +372,87 @@ MsgInfo ProtocolManager::GetProtoMessageInfo(const std::string& msgFullName)
 {
 	wxString strFullProtoName = GetProtoFullNameFromMsgName(msgFullName);
 	return GetProtoMessageInfo(strFullProtoName.ToStdString(),msgFullName);
+}
+
+bool ProtocolManager::InitMsgIDNameMap(const wxString& strXmlFile)
+{
+	wxXmlDocument doc;
+	if (!doc.Load(strXmlFile))
+	{
+		return false;
+	}
+	wxXmlNode *child = doc.GetRoot()->GetChildren();
+	while (child)
+	{
+		if (child->GetName() == "msg")
+		{
+			wxString msg_id = child->GetAttribute("id");
+			wxString msg_full_name = child->GetAttribute("msg_name");
+
+			unsigned long nMsgID = 0;
+			msg_id.ToULong(&nMsgID,16);
+			m_MsgIDNameMap[nMsgID] = msg_full_name;
+		}
+		child = child->GetNext();
+	}
+	m_strMsgIDNameMapXmlFile = strXmlFile;
+	return true;
+}
+
+bool ProtocolManager::UpdateMsgIDNameMap()
+{
+	std::vector<wxString> msgList;
+	unsigned int nTmpIndex = 0;
+	std::map<wxString, std::vector<MsgInfoPtr> >::iterator it = m_xMessageMap.begin();
+	while (it != m_xMessageMap.end())
+	{
+		size_t nSize = it->second.size();
+		for (size_t n = 0; n < nSize; n++)
+		{
+			bool bfind = false;
+			unsigned int nMsgID = GetMsgIDFromName(it->second.at(n)->msg_name);
+			if (nMsgID==0)
+			{
+				m_MsgIDNameMap[nTmpIndex++] = it->second.at(n)->msg_name;
+			}
+			else
+			{
+				m_MsgIDNameMap[nMsgID] = it->second.at(n)->msg_name;
+			}
+		}
+		it++;
+	}
+
+
+	wxXmlDocument xmlDoc;
+	wxXmlNode* root = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "Root");
+	xmlDoc.SetRoot(root);
+	// Add some XML.
+	std::map<unsigned int, wxString>::iterator nameIt = m_MsgIDNameMap.begin();
+	while (nameIt!=m_MsgIDNameMap.end())
+	{
+		wxXmlNode* msg = new wxXmlNode(root, wxXML_ELEMENT_NODE, "msg");
+		msg->AddAttribute("id", wxString::Format("%x",nameIt->first));
+		msg->AddAttribute("msg_name", nameIt->second);
+		nameIt++;
+	}
+	return xmlDoc.Save(m_strMsgIDNameMapXmlFile);
+}
+
+unsigned int ProtocolManager::GetMsgIDFromName(const std::string& msgName)
+{
+	unsigned int nMsgID = 0;
+	bool bfind = false;
+	std::map<unsigned int, wxString>::iterator nameIt = m_MsgIDNameMap.begin();
+	while (nameIt != m_MsgIDNameMap.end())
+	{
+		if (nameIt->second.CmpNoCase(wxString(msgName)) == 0)
+		{
+			bfind = true;
+			nMsgID = nameIt->first;
+			break;
+		}
+		nameIt++;
+	}
+	return nMsgID;
 }

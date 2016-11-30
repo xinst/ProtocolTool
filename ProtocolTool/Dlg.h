@@ -26,6 +26,7 @@
 #include <wx/statline.h>
 
 #include "ProtocolManager.h"
+
 ///////////////////////////////////////////////////////////////////////////
 
 class NetWorkThread;
@@ -36,6 +37,8 @@ enum TOOLS_ID_LIST
 	WX_ID_MSG_CHOICE,
 	WX_ID_BTN_LOGIN,	
 	WX_ID_BTN_SEND,
+	WX_ID_FILE_PICKER,
+	WX_ID_BTN_UPDATE_XML,
 };
 
 struct FieldCtrl
@@ -102,7 +105,7 @@ protected:
 
 	void OnBtnConnect(wxCommandEvent& event);
 	void OnBtnSend(wxCommandEvent& event);
-
+	void OnBtnUpdateXml(wxCommandEvent& event);
 
 	void OnNetWorkMsg(wxCommandEvent& event);
 	void OnProtoMsg(wxCommandEvent& event);
@@ -110,6 +113,7 @@ protected:
 
 	void DestoryThread(NetWorkThread*& p);
 
+	void OnMsgMapFileSelected(wxFileDirPickerEvent& event);
 
 public:
 
@@ -150,6 +154,8 @@ private:
 	wxListBox* m_pListBoxCtrl;
 	wxFlexGridSizer* m_pFGSizer;
 	wxTextCtrl*	m_pMsgIDCtrl;
+	wxFilePickerCtrl* m_pFilePicker;	
+	wxButton* m_pBtnUpdateMsgNameXml;
 };
 
 #endif //__NONAME_H__

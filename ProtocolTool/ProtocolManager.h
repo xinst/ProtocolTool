@@ -72,6 +72,9 @@ public:
 	bool GetFieldsFromProtoFile(const std::string& msgFullName, std::vector<MsgField>& fields);
 	MsgInfo GetProtoMessageInfo(const std::string& msgFullName);
 
+	bool InitMsgIDNameMap( const wxString& strXmlFile );
+	bool UpdateMsgIDNameMap();
+	unsigned int GetMsgIDFromName( const std::string& msgName );
 private:
 
 	bool MakeInputsBeProtoPathRelative(DiskSourceTree* source_tree, std::string& protoFile);
@@ -94,6 +97,9 @@ private:
 	std::shared_ptr<Importer>		m_pImporter;
 	DynamicMessageFactory m_DMsgFactory;
 
+	std::map<unsigned int, wxString> m_MsgIDNameMap;
+
+	wxString m_strMsgIDNameMapXmlFile;
 
 	static const char * const PBLabelName[4];
 };

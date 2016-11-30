@@ -14,12 +14,14 @@
 BEGIN_EVENT_TABLE(Dlg, wxDialog)
 	EVT_CLOSE(Dlg::OnClose)
 	EVT_DIRPICKER_CHANGED(WX_ID_DIR_PICKER,Dlg::OnProtoDirSelected)
+	EVT_FILEPICKER_CHANGED(WX_ID_FILE_PICKER,Dlg::OnMsgMapFileSelected)
 	EVT_CHOICE(WX_ID_MSG_CHOICE, Dlg::OnMsgSelected)
 	EVT_BUTTON(WX_ID_BTN_LOGIN, Dlg::OnBtnConnect)
 	EVT_BUTTON(WX_ID_BTN_SEND, Dlg::OnBtnSend)
 	EVT_COMMAND(ID_RECV_CONNECT_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnNetWorkMsg)
 	EVT_COMMAND(ID_RECV_PROTO_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnProtoMsg)
 	EVT_COMMAND(ID_RECV_LOGIN_MSG, wxEVT_COMMAND_TEXT_UPDATED, Dlg::OnLoginMsg)
+	EVT_BUTTON(WX_ID_BTN_UPDATE_XML,Dlg::OnBtnUpdateXml)
 END_EVENT_TABLE()
 
 
@@ -74,24 +76,41 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 
 	m_staticText5 = new wxStaticText(this, wxID_ANY, wxT("ProtosDir:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText5->Wrap(-1);
-	bSizer5->Add(m_staticText5, 0, wxALIGN_CENTER | wxALL, 5);
+	bSizer5->Add(m_staticText5, 0, wxALIGN_CENTER | wxALL, 10);
 
 	m_pDirCtrl = new wxDirPickerCtrl(this, WX_ID_DIR_PICKER, wxEmptyString, wxT("Select a folder"), wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE);
 	bSizer5->Add(m_pDirCtrl, 1, wxALL | wxLEFT | wxRIGHT, 5);
 
+	wxStaticText* m_staticText7 = new wxStaticText(this, wxID_ANY, wxT("MsgMap:"), wxDefaultPosition, wxDefaultSize, 0);
+	m_staticText7->Wrap(-1);
+	bSizer5->Add(m_staticText7, 0, wxALIGN_CENTER | wxALL, 10);
+
+	m_pFilePicker = new wxFilePickerCtrl(this, WX_ID_FILE_PICKER, wxEmptyString, wxT("Select a file"), wxT("*.xml"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE);
+	bSizer5->Add(m_pFilePicker, 1, wxALL | wxLEFT | wxRIGHT, 5);
+	
+	m_pBtnUpdateMsgNameXml = new wxButton(this, WX_ID_BTN_UPDATE_XML, wxT("UpdateXml"), wxDefaultPosition, wxDefaultSize, 0);
+	bSizer5->Add(m_pBtnUpdateMsgNameXml, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL, 5);
+
+	bSizer1->Add(bSizer5, 0, wxEXPAND, 5);
+
+
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer(wxHORIZONTAL);
+
 	m_staticText6 = new wxStaticText(this, wxID_ANY, wxT("ProtoMsg:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText6->Wrap(-1);
-	bSizer5->Add(m_staticText6, 0, wxALIGN_CENTER | wxALL, 5);
+	bSizer6->Add(m_staticText6, 0, wxALIGN_CENTER | wxALL, 10);
 
 	wxArrayString m_pProtoMsgChoiceChoices;
 	m_pProtoMsgChoice = new wxChoice(this, WX_ID_MSG_CHOICE, wxDefaultPosition, wxDefaultSize, m_pProtoMsgChoiceChoices, wxCB_SORT);
-	bSizer5->Add(m_pProtoMsgChoice, 1, wxALIGN_CENTER | wxLEFT | wxRIGHT, 5);
+	bSizer6->Add(m_pProtoMsgChoice, 1, wxALIGN_CENTER | wxLEFT | wxRIGHT, 5);
 
 	m_pBtnSend = new wxButton(this, WX_ID_BTN_SEND, wxT("Send"), wxDefaultPosition, wxDefaultSize, 0);
-	bSizer5->Add(m_pBtnSend, 0, wxALIGN_CENTER | wxALL, 5);	
+	bSizer6->Add(m_pBtnSend, 0, wxALIGN_CENTER | wxALL, 5);
 	m_pBtnSend->Enable(false);
 
-	bSizer1->Add(bSizer5, 0, wxEXPAND, 5);
+	bSizer1->Add(bSizer6, 0, wxEXPAND, 5);
+
 	
 	wxStaticLine* m_staticline1 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 	bSizer1->Add(m_staticline1, 0, wxEXPAND | wxALL, 5);
@@ -107,6 +126,8 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_pFGSizer->Add(pStatic);
 
 	m_pMsgIDCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	m_pMsgIDCtrl->Enable(false);
+	m_pMsgIDCtrl->SetEditable(false);
 	m_pFGSizer->Add(m_pMsgIDCtrl);
 	
 	wxStaticLine* m_staticline2 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
@@ -145,6 +166,8 @@ void Dlg::InitCtrls( const wxString& dir  )
 	//get the proto list
 	ProtocolManager::Instance()->InitProtocol(dir.ToStdString());
 
+	ProtocolManager::Instance()->InitProtocol(dir.ToStdString());
+
 	auto msgList = ProtocolManager::Instance()->GetProtocolMessageList("");
 	m_pProtoMsgChoice->Clear();
 	for (size_t i=0;i<msgList.size();i++)
@@ -157,7 +180,6 @@ void Dlg::OnProtoDirSelected(wxFileDirPickerEvent& event)
 {
 	wxString strPath = event.GetPath();
 	InitCtrls(strPath);
-
 }
 
 void Dlg::OnMsgSelected(wxCommandEvent& event)
@@ -265,6 +287,11 @@ void Dlg::OnBtnSend(wxCommandEvent& event)
 	}
 }
 
+void Dlg::OnBtnUpdateXml(wxCommandEvent& event)
+{
+	ProtocolManager::Instance()->UpdateMsgIDNameMap();
+}
+
 void Dlg::OnNetWorkMsg(wxCommandEvent& event)
 {
 	if (m_pListBoxCtrl)
@@ -356,4 +383,10 @@ void Dlg::DestoryThread(NetWorkThread*& p)
 		//delete m_pNetWorkThrd;
 		p = nullptr;
 	}
+}
+
+void Dlg::OnMsgMapFileSelected(wxFileDirPickerEvent& event)
+{
+	wxString strPath = event.GetPath();
+	ProtocolManager::Instance()->InitMsgIDNameMap(strPath);
 }
