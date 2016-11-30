@@ -53,12 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WXMSW__
 ;__WXDEBUG__;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(WXMSW)\include;$(WXMSW)\lib\vc_lib\mswud;..\protobuf\src;..\libevent;..\libevent\WIN32-Code\;..\libevent\include\;..\libevent\compat\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\wx\include;..\wx\lib\vc_lib\mswud;..\protobuf\src;..\libevent;..\libevent\WIN32-Code\;..\libevent\include\;..\libevent\compat\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(WXMSW)\lib\vc_lib;..\protobuf\vsprojects\Debug;..\libevent</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\wx\lib\vc_lib;..\protobuf\vsprojects\Debug;..\libevent</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxbase30ud_net.lib;wxmsw30ud_html.lib;wxbase30ud_xml.lib;wxmsw30ud_adv.lib;wxmsw30ud_aui.lib;wxmsw30ud_gl.lib;wxmsw30ud_media.lib;wxmsw30ud_propgrid.lib;wxmsw30ud_qa.lib;wxmsw30ud_ribbon.lib;wxmsw30ud_richtext.lib;wxmsw30ud_stc.lib;wxmsw30ud_xrc.lib;wxscintillad.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;ws2_32.lib;wldap32.lib;libprotobuf.lib;libevent.lib;libevent_core.lib;libevent_extras.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -73,35 +73,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__WXMSW__
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(WXMSW)\include;$(WXMSW)\lib\vc_lib\mswu;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\wx\include;..\wx\lib\vc_lib\mswu;..\protobuf\src;..\libevent;..\libevent\WIN32-Code\;..\libevent\include\;..\libevent\compat\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(WXMSW)\lib\vc_lib;../lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxbase30u_net.lib;
-wxmsw30u_html.lib;
-wxbase30u_xml.lib;
-wxmsw30u_adv.lib
-;wxmsw30u_aui.lib;
-wxmsw30u_gl.lib
-;wxmsw30u_media.lib
-;wxmsw30u_propgrid.lib;
-wxmsw30u_qa.lib;wxmsw30u_ribbon.lib;
-wxmsw30u_richtext.lib;
-wxmsw30u_stc.lib;wxmsw30u_xrc.lib;
-wxscintilla.lib
-;wxmsw30u_core.lib;
-wxbase30u.lib
-;wxtiff.lib
-;wxjpeg.lib;wxpng.lib;wxzlib.lib;
-wxexpat.lib;winmm.lib
-;comctl32.lib;
-rpcrt4.lib;
-wsock32.lib
-;odbc32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;ws2_32.lib;wldap32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\wx\lib\vc_lib;..\protobuf\vsprojects\Release;..\libevent</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wxbase30u_net.lib;wxmsw30u_html.lib;wxbase30u_xml.lib;wxmsw30u_adv.lib;wxmsw30u_aui.lib;wxmsw30u_gl.lib;wxmsw30u_media.lib;wxmsw30u_propgrid.lib;wxmsw30u_qa.lib;wxmsw30u_ribbon.lib;wxmsw30u_richtext.lib;wxmsw30u_stc.lib;wxmsw30u_xrc.lib;wxscintilla.lib;wxmsw30u_core.lib;wxbase30u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxexpat.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;odbc32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbccp32.lib;ws2_32.lib;wldap32.lib;libprotobuf.lib;libevent.lib;libevent_core.lib;libevent_extras.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
