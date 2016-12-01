@@ -58,11 +58,6 @@ bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 			msgList.push_back(msgInfo);
 		}
 
-		if (proto_full_fn.find("PBData.proto") != std::string::npos)
-		{
-			continue;
-		}
-
 		m_xMessageMap.emplace(proto_full_fn, msgList);
 	}
 
@@ -421,6 +416,11 @@ bool ProtocolManager::UpdateMsgIDNameMap()
 		size_t nSize = it->second.size();
 		for (size_t n = 0; n < nSize; n++)
 		{
+			if (it->second.at(n)->msg_name.find("Req")==std::string::npos)
+			{
+				continue;
+			}
+
 			bool bfind = false;
 			unsigned int nMsgID = GetMsgIDFromName(it->second.at(n)->msg_name);
 			if (nMsgID==0)
