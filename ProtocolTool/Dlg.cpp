@@ -195,6 +195,11 @@ void Dlg::InitProtocolField(const wxString& strMsgName)
 		m_FieldList.at(i).Enable(false);
 		m_FieldList.at(i).Show(false);
 	}
+	unsigned int nMsgID = ProtocolManager::Instance()->GetMsgIDFromName(strMsgName.ToStdString());
+	if (m_pMsgIDCtrl)
+	{
+		m_pMsgIDCtrl->SetValue(wxString::Format("0x%0x",nMsgID));
+	}
 
 	auto msgInfo = ProtocolManager::Instance()->GetProtoMessageInfo(strMsgName.ToStdString());
 	

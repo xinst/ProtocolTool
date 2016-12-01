@@ -381,6 +381,8 @@ bool ProtocolManager::InitMsgIDNameMap(const wxString& strXmlFile)
 	{
 		return false;
 	}
+	m_MsgIDNameMap.clear();
+
 	wxXmlNode *child = doc.GetRoot()->GetChildren();
 	while (child)
 	{
