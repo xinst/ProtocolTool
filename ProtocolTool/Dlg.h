@@ -144,7 +144,7 @@ private:
 	wxStaticText* m_staticText3;
 	wxTextCtrl* m_pUserNameCtrl;
 	wxStaticText* m_staticText4;
-	wxTextCtrl* m_pPwdCtrl;
+	wxTextCtrl* m_pVersionCtrl;
 	wxButton* m_pBtnLogin;
 	wxStaticText* m_staticText5;
 	wxDirPickerCtrl* m_pDirCtrl;

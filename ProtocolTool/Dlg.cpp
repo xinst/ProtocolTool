@@ -55,15 +55,15 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText3->Wrap(-1);
 	bSizer4->Add(m_staticText3, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pUserNameCtrl = new wxTextCtrl(this, wxID_ANY, wxString("aaabbb"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pUserNameCtrl = new wxTextCtrl(this, wxID_ANY, wxString(""), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pUserNameCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_staticText4 = new wxStaticText(this, wxID_ANY, wxT("Password:"), wxDefaultPosition, wxDefaultSize, 0);
+	m_staticText4 = new wxStaticText(this, wxID_ANY, wxT("Verion:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText4->Wrap(-1);
 	bSizer4->Add(m_staticText4, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pPwdCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	bSizer4->Add(m_pPwdCtrl, 0, wxALIGN_CENTER | wxALL, 5);
+	m_pVersionCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	bSizer4->Add(m_pVersionCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 	
 	m_pBtnLogin = new wxButton(this, WX_ID_BTN_LOGIN, wxT("Connect"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pBtnLogin, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL, 5);
@@ -308,9 +308,12 @@ void Dlg::OnNetWorkMsg(wxCommandEvent& event)
 		msg.mutable_player_id()->set_svrid(0);
 
 		if (event.GetInt()==100)
-		{			
+		{
+			unsigned long nVer = 0;
+			m_pVersionCtrl->GetValue().ToULong(&nVer);
 			SGFMsg::AccountLoginReq req;
 			req.set_access_token(m_pUserNameCtrl->GetValue().ToStdString());
+			req.set_clientversion(nVer);
 			//send login msg
 			req.SerializeToString(msg.mutable_msg_data());
 
