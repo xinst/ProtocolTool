@@ -39,6 +39,11 @@ bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 	for (size_t i = 0; i < fileList.size(); i++)
 	{
 		std::string proto_full_fn = fileList.Item(i);
+
+		if (proto_full_fn.find("GMMessage")!=std::string::npos)
+		{
+			continue;
+		}
 		
 		std::vector<MsgInfoPtr> msgList;
 
