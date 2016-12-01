@@ -172,7 +172,11 @@ void Dlg::InitCtrls( const wxString& dir  )
 	m_pProtoMsgChoice->Clear();
 	for (size_t i=0;i<msgList.size();i++)
 	{
-		m_pProtoMsgChoice->AppendString( wxString(msgList.at(i)) );
+		wxString strChoiceItem = wxString(msgList.at(i));
+		if (msgList.at(i).find("Req")!=std::string::npos)
+		{
+			m_pProtoMsgChoice->AppendString(strChoiceItem);
+		}
 	}
 }
 
