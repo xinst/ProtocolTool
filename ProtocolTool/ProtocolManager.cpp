@@ -44,12 +44,11 @@ bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 		{
 			continue;
 		}
-		
-		std::vector<MsgInfoPtr> msgList;
 
 		std::vector<std::string> msgNames;
 		GetMsgListFromProtoFile(proto_full_fn, msgNames);
-		
+
+		std::vector<MsgInfoPtr> msgList;
 		for (int i = 0; i < msgNames.size(); i++)
 		{
 			MsgInfoPtr msgInfo(new MsgInfo);
@@ -58,6 +57,12 @@ bool ProtocolManager::InitProtocol(const std::string& strProtocolDir)
 
 			msgList.push_back(msgInfo);
 		}
+
+		if (proto_full_fn.find("PBData.proto") != std::string::npos)
+		{
+			continue;
+		}
+
 		m_xMessageMap.emplace(proto_full_fn, msgList);
 	}
 
