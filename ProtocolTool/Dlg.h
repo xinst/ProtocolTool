@@ -135,6 +135,7 @@ private:
 	NetWorkThread*			m_pLoginThrd;
 
 	std::string				m_strCurGameToken;
+	wxString			    m_strProtocolDir;
 
 private:
 	wxStaticText* m_staticText1;

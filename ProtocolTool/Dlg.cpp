@@ -5,6 +5,7 @@
 #include <chrono>
 #include <functional>
 #include <wx/utils.h> 
+#include <wx/stdpaths.h>
 
 #include "NetWorkThread.h"
 #include "SGFMsgBase.pb.h"
@@ -30,7 +31,13 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 {
 	SetMinSize(wxSize(1024, 768));
 	//this->SetSizeHints(wxDefaultSize, wxDefaultSize);
-
+	wxString exeDir = wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
+	wxString strProtoDir = wxPathOnly(wxPathOnly(exeDir)) + "\\protocols";
+	if (wxDirExists(strProtoDir))
+	{
+		m_strProtocolDir = strProtoDir;
+	}
+	
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer(wxVERTICAL);
 
@@ -41,7 +48,7 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText1->Wrap(-1);
 	bSizer4->Add(m_staticText1, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("192.168.5.21"), wxDefaultPosition, wxDefaultSize, 0);
+	m_pServerIPCtrl = new wxTextCtrl(this, wxID_ANY, wxString("192.168.6.186"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pServerIPCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 
 	m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Port:"), wxDefaultPosition, wxDefaultSize, 0);
@@ -62,7 +69,7 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText4->Wrap(-1);
 	bSizer4->Add(m_staticText4, 0, wxALIGN_CENTER | wxALL, 5);
 
-	m_pVersionCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	m_pVersionCtrl = new wxTextCtrl(this, wxID_ANY, wxString("100"), wxDefaultPosition, wxDefaultSize, 0);
 	bSizer4->Add(m_pVersionCtrl, 0, wxALIGN_CENTER | wxALL, 5);
 	
 	m_pBtnLogin = new wxButton(this, WX_ID_BTN_LOGIN, wxT("Connect"), wxDefaultPosition, wxDefaultSize, 0);
@@ -78,14 +85,16 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	m_staticText5->Wrap(-1);
 	bSizer5->Add(m_staticText5, 0, wxALIGN_CENTER | wxALL, 10);
 
-	m_pDirCtrl = new wxDirPickerCtrl(this, WX_ID_DIR_PICKER, wxEmptyString, wxT("Select a folder"), wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE);
+	m_pDirCtrl = new wxDirPickerCtrl(this, WX_ID_DIR_PICKER, m_strProtocolDir, wxT("Select a folder"), wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE);
 	bSizer5->Add(m_pDirCtrl, 1, wxALL | wxLEFT | wxRIGHT, 5);
 
 	wxStaticText* m_staticText7 = new wxStaticText(this, wxID_ANY, wxT("MsgMap:"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText7->Wrap(-1);
 	bSizer5->Add(m_staticText7, 0, wxALIGN_CENTER | wxALL, 10);
 
-	m_pFilePicker = new wxFilePickerCtrl(this, WX_ID_FILE_PICKER, wxEmptyString, wxT("Select a file"), wxT("*.xml"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE);
+	wxString msg_id_name = m_strProtocolDir + "\\MsgIDNameMap.xml";
+
+	m_pFilePicker = new wxFilePickerCtrl(this, WX_ID_FILE_PICKER, msg_id_name, wxT("Select a file"), wxT("*.xml"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE);
 	bSizer5->Add(m_pFilePicker, 1, wxALL | wxLEFT | wxRIGHT, 5);
 	
 	m_pBtnUpdateMsgNameXml = new wxButton(this, WX_ID_BTN_UPDATE_XML, wxT("UpdateXml"), wxDefaultPosition, wxDefaultSize, 0);
@@ -144,6 +153,12 @@ Dlg::Dlg(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& 
 	this->SetSizer(bSizer1);
 	this->Layout();	
 
+	if (wxDirExists(m_strProtocolDir))
+	{
+		InitCtrls(m_strProtocolDir);
+		ProtocolManager::Instance()->InitMsgIDNameMap(msg_id_name);
+	}
+
 	m_pNetWorkThrd = nullptr;
 	m_pLoginThrd = nullptr;
 }
@@ -164,8 +179,6 @@ void Dlg::OnClose(wxCloseEvent& /*event*/)
 void Dlg::InitCtrls( const wxString& dir  )
 {
 	//get the proto list
-	ProtocolManager::Instance()->InitProtocol(dir.ToStdString());
-
 	ProtocolManager::Instance()->InitProtocol(dir.ToStdString());
 
 	auto msgList = ProtocolManager::Instance()->GetProtocolMessageList("");
